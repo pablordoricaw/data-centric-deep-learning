@@ -20,6 +20,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from src.system import MNISTDataModule, DigitClassifierSystem
 from src.utils import load_config, to_json
 
+from torch import minimum
+from functools import reduce 
 
 class DigitClassifierFlow(FlowSpec):
   r"""A flow that trains a image classifier to recognize handwritten
@@ -113,6 +115,9 @@ class DigitClassifierFlow(FlowSpec):
     # --
     # scores: List[float] 
     # best_index: integer 
+    scores = [ input.callback.best_model_score for input in inputs ]
+    _best_score = reduce(minimum, scores)
+    best_index = scores.index(_best_score)
     # ================================
 
     # sanity check for scores length
